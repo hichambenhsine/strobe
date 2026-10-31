@@ -1,0 +1,47 @@
+<div class="console-layout">
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="brand">
+      <span class="logo-badge">ST</span>
+      <div class="brand-text">
+        <h1>STROBE</h1>
+        <span class="subtitle">Unified Control Plane for Spring Boot</span>
+      </div>
+    </div>
+    <div class="runtime-badge">Spring Boot 3.2.5</div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="content">
+    <div class="card">
+      <div class="card-header">
+        <h2>Host Connectivity Diagnostic</h2>
+        <button (click)="refreshProbe()" class="refresh-btn" type="button">Refresh</button>
+      </div>
+
+      <div class="card-body">
+        @if (loading()) {
+          <div class="status-row">
+            <span class="text-muted">Probing starter endpoint...</span>
+          </div>
+        } @else if (error()) {
+          <div class="status-alert error">
+            <span>{{ error() }}</span>
+          </div>
+        } @else if (pingData()) {
+          <div class="diagnostic-panel">
+            <div class="metric">
+              <span class="metric-label">Starter Status</span>
+              <span class="status-pill up">{{ pingData()?.status }}</span>
+            </div>
+
+            <div class="metric">
+              <span class="metric-label">Backend Message</span>
+              <span class="metric-value">{{ pingData()?.message }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </main>
+</div>
