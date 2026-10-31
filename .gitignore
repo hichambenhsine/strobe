@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+strobe-spring-boot-starter/src/main/resources/static/strobe
+
+# Node binary installed by frontend-maven-plugin
+node/
