@@ -33,13 +33,13 @@ public class StrobeRouteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRoute(@PathVariable String id) {
+    public ResponseEntity<Void> deleteRoute(@PathVariable("id") String id) {
         boolean removed = routeService.deleteRoute(id);
         return removed ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}/toggle")
-    public ResponseEntity<StrobeRouteDto> toggleRoute(@PathVariable String id) {
+    public ResponseEntity<StrobeRouteDto> toggleRoute(@PathVariable("id") String id) {
         return routeService.toggleRouteStatus(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
