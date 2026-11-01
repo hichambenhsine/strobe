@@ -1,0 +1,112 @@
+<div class="route-manager">
+  <div class="actions-bar">
+    <div>
+      <h2>Dynamic Route Manager</h2>
+      <p class="subtitle">Inspect and manipulate Spring Cloud Gateway routes in real-time</p>
+    </div>
+    <div class="btn-group">
+      <button (click)="fetchRoutes()" class="btn btn-secondary" type="button">Refresh</button>
+      <button (click)="openModal()" class="btn btn-primary" type="button">+ New Route</button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="card state-card">
+      <span class="text-muted">Querying active route registry...</span>
+    </div>
+  } @else if (routes().length === 0) {
+    <div class="card state-card">
+      <span class="text-muted">No dynamic routes registered yet.</span>
+    </div>
+  } @else {
+    <div class="table-container card">
+      <table class="routes-table">
+        <thead>
+        <tr>
+          <th>Route ID</th>
+          <th>Target URI</th>
+          <th>Path Pattern</th>
+          <th>Predicates & Filters</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (route of routes(); track route.id) {
+            <tr>
+              <td class="font-mono text-bold">{{ route.id }}</td>
+              <td class="font-mono text-accent">{{ route.uri }}</td>
+              <td class="font-mono">{{ route.path }}</td>
+              <td>
+                <div class="tag-group">
+                  @for (pred of route.predicates; track pred) {
+                    <span class="tag tag-predicate">{{ pred }}</span>
+                  }
+                  @for (filt of route.filters; track filt) {
+                    <span class="tag tag-filter">{{ filt }}</span>
+                  }
+                </div>
+              </td>
+              <td>
+                <span class="status-pill" [class.up]="route.enabled" [class.down]="!route.enabled">
+                  {{ route.enabled ? 'ACTIVE' : 'DISABLED' }}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button (click)="toggleRoute(route.id)" class="action-btn" type="button">
+                    {{ route.enabled ? 'Disable' : 'Enable' }}
+                  </button>
+                  <button (click)="deleteRoute(route.id)" class="action-btn delete" type="button">Delete</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Creation Modal -->
+  @if (showModal()) {
+    <div class="modal-backdrop">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Register Dynamic Gateway Route</h3>
+          <button (click)="closeModal()" class="close-btn" type="button">&times;</button>
+        </div>
+        <form [formGroup]="routeForm" (ngSubmit)="submitRoute()" class="modal-form">
+          <div class="form-group">
+            <label for="routeId">Route ID *</label>
+            <input id="routeId" type="text" formControlName="id" placeholder="e.g., customer-service-route" />
+          </div>
+
+          <div class="form-group">
+            <label for="targetUri">Target URI *</label>
+            <input id="targetUri" type="text" formControlName="uri" placeholder="e.g., http://localhost:8085" />
+          </div>
+
+          <div class="form-group">
+            <label for="pathPattern">Inbound Path *</label>
+            <input id="pathPattern" type="text" formControlName="path" placeholder="e.g., /api/v1/customers/**" />
+          </div>
+
+          <div class="form-group">
+            <label for="predicates">Predicates (comma-separated)</label>
+            <input id="predicates" type="text" formControlName="predicates" placeholder="e.g., Method=GET,POST" />
+          </div>
+
+          <div class="form-group">
+            <label for="filters">Filters (comma-separated)</label>
+            <input id="filters" type="text" formControlName="filters" placeholder="e.g., StripPrefix=1" />
+          </div>
+
+          <div class="modal-footer">
+            <button (click)="closeModal()" type="button" class="btn btn-secondary">Cancel</button>
+            <button type="submit" [disabled]="routeForm.invalid" class="btn btn-primary">Inject Route</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

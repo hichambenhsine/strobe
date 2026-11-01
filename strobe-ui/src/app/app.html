@@ -8,86 +8,99 @@
         <span class="subtitle">Unified Control Plane for Spring Boot</span>
       </div>
     </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button (click)="setTab('health')" [class.active]="activeTab() === 'health'" class="tab-btn" type="button">
+        System Telemetry
+      </button>
+      <button (click)="setTab('routes')" [class.active]="activeTab() === 'routes'" class="tab-btn" type="button">
+        Gateway Routes
+      </button>
+    </nav>
+
     <div class="runtime-badge">Spring Boot 3.2.5</div>
   </header>
 
   <!-- Main Workspace -->
   <main class="content">
-    <div class="actions-bar">
-      <h2>System Telemetry & Health</h2>
-      <button (click)="refreshHealthTelemetry()" class="refresh-btn" type="button">Refresh Metrics</button>
-    </div>
+    @if (activeTab() === 'health') {
+      <div class="actions-bar">
+        <h2>System Telemetry & Health</h2>
+        <button (click)="refreshHealthTelemetry()" class="refresh-btn" type="button">Refresh Metrics</button>
+      </div>
 
-    @if (loading()) {
-      <div class="card state-card">
-        <span class="text-muted">Loading telemetry from Spring Boot Actuator...</span>
-      </div>
-    } @else if (error()) {
-      <div class="card state-card error">
-        <span>{{ error() }}</span>
-      </div>
-    } @else if (healthData()) {
-      <div class="grid-layout">
-        <!-- Overview Card -->
-        <div class="card">
-          <div class="card-header">
-            <h3>Global System State</h3>
-          </div>
-          <div class="card-body stat-center">
-            <span class="status-pill-large" [class.up]="healthData()?.status === 'UP'" [class.down]="healthData()?.status !== 'UP'">
-              {{ healthData()?.status }}
-            </span>
-            <span class="stat-description">Host application is fully operational</span>
-          </div>
+      @if (loading()) {
+        <div class="card state-card">
+          <span class="text-muted">Loading telemetry from Spring Boot Actuator...</span>
         </div>
-
-        <!-- Disk Space Card -->
-        @if (diskMetrics(); as disk) {
+      } @else if (error()) {
+        <div class="card state-card error">
+          <span>{{ error() }}</span>
+        </div>
+      } @else if (healthData()) {
+        <div class="grid-layout">
           <div class="card">
             <div class="card-header">
-              <h3>Storage Health</h3>
-              <span class="header-tag">{{ disk.usagePercent }}% used</span>
+              <h3>Global System State</h3>
+            </div>
+            <div class="card-body stat-center">
+              <span class="status-pill-large" [class.up]="healthData()?.status === 'UP'" [class.down]="healthData()?.status !== 'UP'">
+                {{ healthData()?.status }}
+              </span>
+              <span class="stat-description">Host application is fully operational</span>
+            </div>
+          </div>
+
+          @if (diskMetrics(); as disk) {
+            <div class="card">
+              <div class="card-header">
+                <h3>Storage Health</h3>
+                <span class="header-tag">{{ disk.usagePercent }}% used</span>
+              </div>
+              <div class="card-body">
+                <div class="progress-bar-container">
+                  <div class="progress-bar" [style.width.%]="disk.usagePercent"></div>
+                </div>
+                <div class="disk-stats">
+                  <div>
+                    <span class="label">Used</span>
+                    <span class="value">{{ disk.usedGb }} GB</span>
+                  </div>
+                  <div>
+                    <span class="label">Free</span>
+                    <span class="value">{{ disk.freeGb }} GB</span>
+                  </div>
+                  <div>
+                    <span class="label">Total</span>
+                    <span class="value">{{ disk.totalGb }} GB</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+
+          <div class="card full-width">
+            <div class="card-header">
+              <h3>Subsystem Components</h3>
+              <span class="header-tag">{{ componentList().length }} registered</span>
             </div>
             <div class="card-body">
-              <div class="progress-bar-container">
-                <div class="progress-bar" [style.width.%]="disk.usagePercent"></div>
+              <div class="component-list">
+                @for (comp of componentList(); track comp.name) {
+                  <div class="component-row">
+                    <span class="component-name">{{ comp.name }}</span>
+                    <span class="status-pill" [class.up]="comp.status === 'UP'">{{ comp.status }}</span>
+                  </div>
+                }
               </div>
-              <div class="disk-stats">
-                <div>
-                  <span class="label">Used</span>
-                  <span class="value">{{ disk.usedGb }} GB</span>
-                </div>
-                <div>
-                  <span class="label">Free</span>
-                  <span class="value">{{ disk.freeGb }} GB</span>
-                </div>
-                <div>
-                  <span class="label">Total</span>
-                  <span class="value">{{ disk.totalGb }} GB</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        }
-
-        <!-- Subsystems Card -->
-        <div class="card full-width">
-          <div class="card-header">
-            <h3>Subsystem Components</h3>
-            <span class="header-tag">{{ componentList().length }} registered</span>
-          </div>
-          <div class="card-body">
-            <div class="component-list">
-              @for (comp of componentList(); track comp.name) {
-                <div class="component-row">
-                  <span class="component-name">{{ comp.name }}</span>
-                  <span class="status-pill" [class.up]="comp.status === 'UP'">{{ comp.status }}</span>
-                </div>
-              }
             </div>
           </div>
         </div>
-      </div>
+      }
+    } @else {
+      <!-- Dynamic Gateway Route Manager Component -->
+      <app-route-manager></app-route-manager>
     }
   </main>
 </div>

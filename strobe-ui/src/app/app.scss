@@ -254,3 +254,30 @@ $danger: #ef4444;
     color: $danger;
   }
 }
+
+.nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+
+  .tab-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: $text-muted;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      color: $text-light;
+    }
+
+    &.active {
+      background-color: $card-bg;
+      border-color: $border-color;
+      color: $primary;
+    }
+  }
+}

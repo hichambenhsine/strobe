@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {StrobeHealthService} from './services/health.service';
 import {DiskSpaceDetails, StrobeHealthResponse} from './models/health.model';
+import {RouteManager} from './components/route-manager/route-manager';
 
 interface ComponentViewModel {
   name: string;
@@ -14,7 +15,7 @@ interface ComponentViewModel {
  * Implements modern Angular Signals to manage application probe state.
  */
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouteManager],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',
@@ -23,6 +24,7 @@ interface ComponentViewModel {
 export class App implements OnInit{
   private readonly healthService = inject(StrobeHealthService);
 
+  public readonly activeTab = signal<'health' | 'routes'>('health');
   public readonly healthData = signal<StrobeHealthResponse | null>(null)
   public readonly loading = signal<boolean>(true);
   public readonly error = signal<string | null>(null);
@@ -59,6 +61,10 @@ export class App implements OnInit{
 
   ngOnInit(): void {
     this.refreshHealthTelemetry();
+  }
+
+  public setTab(tab: 'health' | 'routes'): void {
+    this.activeTab.set(tab);
   }
 
   public refreshHealthTelemetry(): void {
