@@ -13,4 +13,15 @@
     <name>Strobe :: Sample :: Spring Cloud Gateway</name>
     <description>Reactive Spring Cloud Gateway testbed application</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.github.hichambenhsine</groupId>
+            <artifactId>strobe-spring-boot-starter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+    </dependencies>
 </project>
