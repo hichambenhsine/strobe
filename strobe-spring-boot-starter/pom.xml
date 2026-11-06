@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.hichambenhsine</groupId>
+        <artifactId>strobe</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>strobe-spring-boot-starter</artifactId>
+    <name>Strobe :: Spring Boot Starter</name>
+    <description>Core starter facade depending on auto-configure</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.hichambenhsine</groupId>
+            <artifactId>strobe-spring-boot</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>
