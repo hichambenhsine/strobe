@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: strobe-sample-gateway
+
+server:
+  port: 8081
