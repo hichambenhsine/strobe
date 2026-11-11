@@ -36,8 +36,11 @@ public class StrobeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public StrobeMetadataService strobeMetadataService(Environment environment, ApplicationContext context){
-        return new StrobeMetadataService(environment, context);
+    public StrobeMetadataService strobeMetadataService(
+            Environment environment,
+            ApplicationContext context,
+            ObjectProvider<StrobeRouteService> routeServiceObjectProvider){
+        return new StrobeMetadataService(environment, context, routeServiceObjectProvider);
     }
 
     @Bean
