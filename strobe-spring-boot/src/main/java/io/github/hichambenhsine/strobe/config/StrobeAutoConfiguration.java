@@ -2,10 +2,13 @@ package io.github.hichambenhsine.strobe.config;
 
 import io.github.hichambenhsine.strobe.controller.StrobeMetadataController;
 import io.github.hichambenhsine.strobe.controller.StrobePingController;
+import io.github.hichambenhsine.strobe.controller.StrobeResilienceController;
 import io.github.hichambenhsine.strobe.controller.StrobeRouteController;
 import io.github.hichambenhsine.strobe.gateway.StrobeRouteDefinitionLocator;
 import io.github.hichambenhsine.strobe.service.StrobeMetadataService;
+import io.github.hichambenhsine.strobe.service.StrobeResilienceService;
 import io.github.hichambenhsine.strobe.service.StrobeRouteService;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -69,6 +72,24 @@ public class StrobeAutoConfiguration {
         @ConditionalOnMissingBean
         public StrobeRouteDefinitionLocator strobeRouteDefinitionLocator(StrobeRouteService strobeRouteService){
             return new StrobeRouteDefinitionLocator(strobeRouteService);
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass(name = "io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry")
+    public static class StrobeResilienceConfiguration {
+        @Bean
+        @ConditionalOnMissingBean
+        public StrobeResilienceService strobeResilienceService(
+                ObjectProvider<CircuitBreakerRegistry> registryProvider,
+                Environment environment) {
+            return new StrobeResilienceService(registryProvider, environment);
+        }
+
+        @Bean
+        @ConditionalOnMissingBean
+        public StrobeResilienceController strobeResilienceController(StrobeResilienceService resilienceService){
+            return new StrobeResilienceController(resilienceService);
         }
     }
 }
