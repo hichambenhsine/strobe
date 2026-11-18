@@ -1,7 +1,7 @@
 package io.github.hichambenhsine.strobe.config;
 
 import io.github.hichambenhsine.strobe.capability.ActuatorCapabilityContributor;
-import io.github.hichambenhsine.strobe.capability.GatewayCapabilityContributor;
+import io.github.hichambenhsine.strobe.capability.SpringCloudGatewayCapabilityContributor;
 import io.github.hichambenhsine.strobe.capability.Resilience4jCapabilityContributor;
 import io.github.hichambenhsine.strobe.controller.StrobeMetadataController;
 import io.github.hichambenhsine.strobe.controller.StrobePingController;
@@ -25,8 +25,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * Core auto-configuration entry point.
@@ -68,7 +66,7 @@ public class StrobeAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(name = "org.springframework.cloud.gateway.event.RefreshRoutesEvent")
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-    public static class StrobeGatewayConfiguration {
+    public static class StrobeSpringCloudGatewayConfiguration {
         @Bean
         @ConditionalOnMissingBean
         public StrobeRouteService strobeRouteService(ApplicationEventPublisher applicationEventPublisher, ObjectProvider<RouteLocator> routeLocatorProvider){
@@ -89,8 +87,8 @@ public class StrobeAutoConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
-        public GatewayCapabilityContributor gatewayCapabilityContributor(ObjectProvider<RouteLocator> routeLocatorProvider) {
-            return new GatewayCapabilityContributor(routeLocatorProvider);
+        public SpringCloudGatewayCapabilityContributor springCloudGatewayCapabilityContributor(ObjectProvider<RouteLocator> routeLocatorProvider) {
+            return new SpringCloudGatewayCapabilityContributor(routeLocatorProvider);
         }
     }
 

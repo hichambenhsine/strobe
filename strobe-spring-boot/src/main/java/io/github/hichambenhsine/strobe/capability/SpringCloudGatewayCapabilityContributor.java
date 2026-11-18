@@ -7,13 +7,15 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 
 /**
  * Capability contributor evaluating Spring Cloud Gateway availability at runtime.
- * Verifies actual RouteLocator bean instantiation rather than relying solely on classpath presence.
+ * Contributes under the generic "gateway" domain port while explicitly identifying the concrete provider.
  */
-public class GatewayCapabilityContributor implements StrobeCapabilityContributor {
+public class SpringCloudGatewayCapabilityContributor implements StrobeCapabilityContributor {
+
+    private static final String PROVIDER_NAME = "spring-cloud-gateway";
 
     private final ObjectProvider<RouteLocator> routeLocatorProvider;
 
-    public GatewayCapabilityContributor(ObjectProvider<RouteLocator> routeLocatorProvider) {
+    public SpringCloudGatewayCapabilityContributor(ObjectProvider<RouteLocator> routeLocatorProvider) {
         this.routeLocatorProvider = routeLocatorProvider;
     }
 
@@ -25,6 +27,6 @@ public class GatewayCapabilityContributor implements StrobeCapabilityContributor
     @Override
     public Object getCapabilityStatus() {
         boolean isActive = routeLocatorProvider.getIfAvailable() != null;
-        return new StrobeGatewayStatus(isActive);
+        return new StrobeGatewayStatus(isActive, PROVIDER_NAME);
     }
 }
