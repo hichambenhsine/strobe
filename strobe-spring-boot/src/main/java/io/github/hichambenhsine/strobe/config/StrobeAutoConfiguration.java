@@ -42,8 +42,9 @@ public class StrobeAutoConfiguration {
     public StrobeMetadataService strobeMetadataService(
             Environment environment,
             ApplicationContext context,
-            ObjectProvider<StrobeRouteService> routeServiceObjectProvider){
-        return new StrobeMetadataService(environment, context, routeServiceObjectProvider);
+            ObjectProvider<StrobeRouteService> routeServiceObjectProvider,
+            ObjectProvider<StrobeResilienceService> resilienceServiceProvider){
+        return new StrobeMetadataService(environment, context, routeServiceObjectProvider, resilienceServiceProvider);
     }
 
     @Bean

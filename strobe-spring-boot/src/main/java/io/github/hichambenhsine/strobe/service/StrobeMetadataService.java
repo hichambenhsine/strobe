@@ -11,18 +11,25 @@ public class StrobeMetadataService {
     private final Environment environment;
     private final ApplicationContext context;
     private final ObjectProvider<StrobeRouteService> routeServiceProvider;
+    private final ObjectProvider<StrobeResilienceService> resilienceServiceProvider;
 
-    public StrobeMetadataService(Environment environment, ApplicationContext context, ObjectProvider<StrobeRouteService> routeServiceProvider) {
+    public StrobeMetadataService(
+            Environment environment,
+            ApplicationContext context,
+            ObjectProvider<StrobeRouteService> routeServiceProvider,
+            ObjectProvider<StrobeResilienceService> resilienceServiceProvider) {
         this.environment = environment;
         this.context = context;
         this.routeServiceProvider = routeServiceProvider;
+        this.resilienceServiceProvider = resilienceServiceProvider;
     }
 
     public StrobeMetadataDto getMetadata(){
         return new StrobeMetadataDto(
                 appName(),
                 actuatorStatus(),
-                isGatewayEnabled());
+                isGatewayEnabled(),
+                isResilienceEnabled());
     }
 
     private String appName() {
@@ -36,5 +43,9 @@ public class StrobeMetadataService {
 
     private boolean isGatewayEnabled() {
         return routeServiceProvider.getIfAvailable() != null;
+    }
+
+    private boolean isResilienceEnabled() {
+        return resilienceServiceProvider.getIfAvailable() != null;
     }
 }
