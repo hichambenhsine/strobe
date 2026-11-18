@@ -1,6 +1,7 @@
 package io.github.hichambenhsine.strobe.config;
 
 import io.github.hichambenhsine.strobe.capability.ActuatorCapabilityContributor;
+import io.github.hichambenhsine.strobe.capability.GatewayCapabilityContributor;
 import io.github.hichambenhsine.strobe.controller.StrobeMetadataController;
 import io.github.hichambenhsine.strobe.controller.StrobePingController;
 import io.github.hichambenhsine.strobe.controller.StrobeResilienceController;
@@ -83,6 +84,12 @@ public class StrobeAutoConfiguration {
         @ConditionalOnMissingBean
         public StrobeRouteDefinitionLocator strobeRouteDefinitionLocator(StrobeRouteService strobeRouteService){
             return new StrobeRouteDefinitionLocator(strobeRouteService);
+        }
+
+        @Bean
+        @ConditionalOnMissingBean
+        public GatewayCapabilityContributor gatewayCapabilityContributor(ObjectProvider<RouteLocator> routeLocatorProvider) {
+            return new GatewayCapabilityContributor(routeLocatorProvider);
         }
     }
 
