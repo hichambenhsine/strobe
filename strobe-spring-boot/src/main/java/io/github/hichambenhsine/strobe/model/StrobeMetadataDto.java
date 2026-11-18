@@ -1,11 +1,14 @@
 package io.github.hichambenhsine.strobe.model;
 
+import java.util.Map;
+
 /**
- * Data transfer object encapsulating the baseline runtime environment metadata.
+ * Extensible root metadata DTO aggregating application info and registered module capabilities.
+ *
+ * @param applicationName Host Spring Boot application name.
+ * @param capabilities Map of registered module statuses keyed by capability name.
  */
 public record StrobeMetadataDto(
         String applicationName,
-        StrobeActuatorStatus actuator,
-        boolean gatewayEnabled,
-        boolean resilienceEnabled
+        Map<String, Object> capabilities
 ) {}

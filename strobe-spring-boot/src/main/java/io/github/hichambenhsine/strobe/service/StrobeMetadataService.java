@@ -2,50 +2,33 @@ package io.github.hichambenhsine.strobe.service;
 
 import io.github.hichambenhsine.strobe.model.StrobeActuatorStatus;
 import io.github.hichambenhsine.strobe.model.StrobeMetadataDto;
+import io.github.hichambenhsine.strobe.spi.StrobeCapabilityContributor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 public class StrobeMetadataService {
 
     private final Environment environment;
-    private final ApplicationContext context;
-    private final ObjectProvider<StrobeRouteService> routeServiceProvider;
-    private final ObjectProvider<StrobeResilienceService> resilienceServiceProvider;
+    private final List<StrobeCapabilityContributor> contributors;
 
-    public StrobeMetadataService(
-            Environment environment,
-            ApplicationContext context,
-            ObjectProvider<StrobeRouteService> routeServiceProvider,
-            ObjectProvider<StrobeResilienceService> resilienceServiceProvider) {
+    public StrobeMetadataService(Environment environment, List<StrobeCapabilityContributor> contributors) {
         this.environment = environment;
-        this.context = context;
-        this.routeServiceProvider = routeServiceProvider;
-        this.resilienceServiceProvider = resilienceServiceProvider;
+        this.contributors = contributors != null ? contributors : List.of();
     }
 
-    public StrobeMetadataDto getMetadata(){
-        return new StrobeMetadataDto(
-                appName(),
-                actuatorStatus(),
-                isGatewayEnabled(),
-                isResilienceEnabled());
-    }
+    public StrobeMetadataDto getMetadata() {
+        String appName = environment.getProperty("spring.application.name", "spring-boot-app");
+        Map<String, Object> capabilities = new LinkedHashMap<>();
 
-    private String appName() {
-        return environment.getProperty("spring.application.name", "spring-boot-app");
-    }
+        for (StrobeCapabilityContributor contributor : contributors) {
+            capabilities.put(contributor.getCapabilityName(), contributor.getCapabilityStatus());
+        }
 
-    private StrobeActuatorStatus actuatorStatus() {
-        boolean isActuatorEnabled = context.containsBean("healthEndpoint");
-        return new StrobeActuatorStatus(isActuatorEnabled);
-    }
-
-    private boolean isGatewayEnabled() {
-        return routeServiceProvider.getIfAvailable() != null;
-    }
-
-    private boolean isResilienceEnabled() {
-        return resilienceServiceProvider.getIfAvailable() != null;
+        return new StrobeMetadataDto(appName, capabilities);
     }
 }

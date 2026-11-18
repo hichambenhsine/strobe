@@ -1,5 +1,6 @@
 package io.github.hichambenhsine.strobe.config;
 
+import io.github.hichambenhsine.strobe.capability.ActuatorCapabilityContributor;
 import io.github.hichambenhsine.strobe.controller.StrobeMetadataController;
 import io.github.hichambenhsine.strobe.controller.StrobePingController;
 import io.github.hichambenhsine.strobe.controller.StrobeResilienceController;
@@ -8,6 +9,7 @@ import io.github.hichambenhsine.strobe.gateway.StrobeRouteDefinitionLocator;
 import io.github.hichambenhsine.strobe.service.StrobeMetadataService;
 import io.github.hichambenhsine.strobe.service.StrobeResilienceService;
 import io.github.hichambenhsine.strobe.service.StrobeRouteService;
+import io.github.hichambenhsine.strobe.spi.StrobeCapabilityContributor;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -21,6 +23,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Core auto-configuration entry point.
@@ -39,12 +43,18 @@ public class StrobeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public ActuatorCapabilityContributor actuatorCapabilityContributor(
+            Environment environment,
+            ApplicationContext context) {
+        return new ActuatorCapabilityContributor(environment, context);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public StrobeMetadataService strobeMetadataService(
             Environment environment,
-            ApplicationContext context,
-            ObjectProvider<StrobeRouteService> routeServiceObjectProvider,
-            ObjectProvider<StrobeResilienceService> resilienceServiceProvider){
-        return new StrobeMetadataService(environment, context, routeServiceObjectProvider, resilienceServiceProvider);
+            ObjectProvider<StrobeCapabilityContributor> contributorsProvider) {
+        return new StrobeMetadataService(environment, contributorsProvider.orderedStream().toList());
     }
 
     @Bean
