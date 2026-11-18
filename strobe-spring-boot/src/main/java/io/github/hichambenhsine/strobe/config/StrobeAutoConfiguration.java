@@ -94,7 +94,7 @@ public class StrobeAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(name = "io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry")
-    public static class StrobeResilienceConfiguration {
+    public static class StrobeResilience4jConfiguration {
         @Bean
         @ConditionalOnMissingBean
         public StrobeResilienceService strobeResilienceService(
