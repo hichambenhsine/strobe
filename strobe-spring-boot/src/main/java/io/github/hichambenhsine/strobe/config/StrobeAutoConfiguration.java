@@ -2,6 +2,7 @@ package io.github.hichambenhsine.strobe.config;
 
 import io.github.hichambenhsine.strobe.capability.ActuatorCapabilityContributor;
 import io.github.hichambenhsine.strobe.capability.GatewayCapabilityContributor;
+import io.github.hichambenhsine.strobe.capability.Resilience4jCapabilityContributor;
 import io.github.hichambenhsine.strobe.controller.StrobeMetadataController;
 import io.github.hichambenhsine.strobe.controller.StrobePingController;
 import io.github.hichambenhsine.strobe.controller.StrobeResilienceController;
@@ -108,6 +109,13 @@ public class StrobeAutoConfiguration {
         @ConditionalOnMissingBean
         public StrobeResilienceController strobeResilienceController(StrobeResilienceService resilienceService){
             return new StrobeResilienceController(resilienceService);
+        }
+
+        @Bean
+        @ConditionalOnMissingBean
+        public Resilience4jCapabilityContributor resilience4jCapabilityContributor(
+                ObjectProvider<CircuitBreakerRegistry> registryProvider) {
+            return new Resilience4jCapabilityContributor(registryProvider);
         }
     }
 }
