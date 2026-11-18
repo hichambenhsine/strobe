@@ -6,5 +6,6 @@ package io.github.hichambenhsine.strobe.model;
 public record StrobeMetadataDto(
         String applicationName,
         StrobeActuatorStatus actuator,
-        boolean gatewayEnabled
+        boolean gatewayEnabled,
+        boolean resilienceEnabled
 ) {}
