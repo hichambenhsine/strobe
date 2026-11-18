@@ -1,5 +1,8 @@
 package io.github.hichambenhsine.strobe.config;
 
+import io.github.hichambenhsine.strobe.capability.ActuatorCapabilityContributor;
+import io.github.hichambenhsine.strobe.capability.SpringCloudGatewayCapabilityContributor;
+import io.github.hichambenhsine.strobe.capability.Resilience4jCapabilityContributor;
 import io.github.hichambenhsine.strobe.controller.StrobeMetadataController;
 import io.github.hichambenhsine.strobe.controller.StrobePingController;
 import io.github.hichambenhsine.strobe.controller.StrobeResilienceController;
@@ -8,6 +11,7 @@ import io.github.hichambenhsine.strobe.gateway.StrobeRouteDefinitionLocator;
 import io.github.hichambenhsine.strobe.service.StrobeMetadataService;
 import io.github.hichambenhsine.strobe.service.StrobeResilienceService;
 import io.github.hichambenhsine.strobe.service.StrobeRouteService;
+import io.github.hichambenhsine.strobe.spi.StrobeCapabilityContributor;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -39,12 +43,18 @@ public class StrobeAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public ActuatorCapabilityContributor actuatorCapabilityContributor(
+            Environment environment,
+            ApplicationContext context) {
+        return new ActuatorCapabilityContributor(environment, context);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public StrobeMetadataService strobeMetadataService(
             Environment environment,
-            ApplicationContext context,
-            ObjectProvider<StrobeRouteService> routeServiceObjectProvider,
-            ObjectProvider<StrobeResilienceService> resilienceServiceProvider){
-        return new StrobeMetadataService(environment, context, routeServiceObjectProvider, resilienceServiceProvider);
+            ObjectProvider<StrobeCapabilityContributor> contributorsProvider) {
+        return new StrobeMetadataService(environment, contributorsProvider.orderedStream().toList());
     }
 
     @Bean
@@ -56,7 +66,7 @@ public class StrobeAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(name = "org.springframework.cloud.gateway.event.RefreshRoutesEvent")
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-    public static class StrobeGatewayConfiguration {
+    public static class StrobeSpringCloudGatewayConfiguration {
         @Bean
         @ConditionalOnMissingBean
         public StrobeRouteService strobeRouteService(ApplicationEventPublisher applicationEventPublisher, ObjectProvider<RouteLocator> routeLocatorProvider){
@@ -74,11 +84,17 @@ public class StrobeAutoConfiguration {
         public StrobeRouteDefinitionLocator strobeRouteDefinitionLocator(StrobeRouteService strobeRouteService){
             return new StrobeRouteDefinitionLocator(strobeRouteService);
         }
+
+        @Bean
+        @ConditionalOnMissingBean
+        public SpringCloudGatewayCapabilityContributor springCloudGatewayCapabilityContributor(ObjectProvider<RouteLocator> routeLocatorProvider) {
+            return new SpringCloudGatewayCapabilityContributor(routeLocatorProvider);
+        }
     }
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(name = "io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry")
-    public static class StrobeResilienceConfiguration {
+    public static class StrobeResilience4jConfiguration {
         @Bean
         @ConditionalOnMissingBean
         public StrobeResilienceService strobeResilienceService(
@@ -91,6 +107,13 @@ public class StrobeAutoConfiguration {
         @ConditionalOnMissingBean
         public StrobeResilienceController strobeResilienceController(StrobeResilienceService resilienceService){
             return new StrobeResilienceController(resilienceService);
+        }
+
+        @Bean
+        @ConditionalOnMissingBean
+        public Resilience4jCapabilityContributor resilience4jCapabilityContributor(
+                ObjectProvider<CircuitBreakerRegistry> registryProvider) {
+            return new Resilience4jCapabilityContributor(registryProvider);
         }
     }
 }
