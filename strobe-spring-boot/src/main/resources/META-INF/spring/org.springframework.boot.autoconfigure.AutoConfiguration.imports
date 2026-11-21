@@ -1,1 +1,2 @@
 io.github.hichambenhsine.strobe.config.StrobeAutoConfiguration
+io.github.hichambenhsine.strobe.config.StrobeRedisAutoConfiguration
