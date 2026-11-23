@@ -2,3 +2,4 @@ io.github.hichambenhsine.strobe.config.StrobeAutoConfiguration
 io.github.hichambenhsine.strobe.config.StrobeSpringCloudGatewayAutoConfiguration
 io.github.hichambenhsine.strobe.config.StrobeResilience4jAutoConfiguration
 io.github.hichambenhsine.strobe.config.StrobeRedisAutoConfiguration
+io.github.hichambenhsine.strobe.config.StrobeMetricsAutoConfiguration
